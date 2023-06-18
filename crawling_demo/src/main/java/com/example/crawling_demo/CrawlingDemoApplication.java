@@ -91,10 +91,6 @@ public class CrawlingDemoApplication {
     }
 
     private void detail(String styleCategory, WebDriver driver) throws InterruptedException {
-        // #style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div.swiper-slide.style_contents_size.swiper-slide-active > div.box-img > a
-        // #style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div.swiper-slide.style_contents_size.swiper-slide-next > div.box-img > a
-        // #style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div:nth-child(3) > div.box-img > a
-        // #style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div:nth-child(4) > div.box-img > a
 
         // 각 코디 상품 디테일로 이동
         int itemNum = driver.findElements(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div")).size();
