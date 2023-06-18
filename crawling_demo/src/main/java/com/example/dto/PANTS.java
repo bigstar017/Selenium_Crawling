@@ -2,93 +2,103 @@ package com.example.dto;
 
 public class PANTS {
 
-    String brand;
-    String category;
-    String color;
-    String season;
-    String textile;
-    String itemName;
-    int price;
-    String img;
+    String PANTS_ID;
+    String BRAND;
+    String CATEGORY;
+    String COLOR;
+    String SEASON;
+    String TEXTILE;
+    String ITEM;
+    int PRICE;
+    String IMG;
     String URL;
 
     public PANTS() {
     }
 
-    public PANTS(String brand, String category, String color, String season, String textile, String itemName, int price, String img, String URL) {
-        this.brand = brand;
-        this.category = category;
-        this.color = color;
-        this.season = season;
-        this.textile = textile;
-        this.itemName = itemName;
-        this.price = price;
-        this.img = img;
+    public PANTS(String PANTS_ID, String BRAND, String CATEGORY, String COLOR, String SEASON, String TEXTILE, String ITEM, int PRICE, String IMG, String URL) {
+        this.PANTS_ID = PANTS_ID;
+        this.BRAND = BRAND;
+        this.CATEGORY = CATEGORY;
+        this.COLOR = COLOR;
+        this.SEASON = SEASON;
+        this.TEXTILE = TEXTILE;
+        this.ITEM = ITEM;
+        this.PRICE = PRICE;
+        this.IMG = IMG;
         this.URL = URL;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getPANTS_ID() {
+        return PANTS_ID;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setPANTS_ID(String PANTS_ID) {
+        this.PANTS_ID = PANTS_ID;
     }
 
-    public String getCategory() {
-        return category;
+    public String getBRAND() {
+        return BRAND;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setBRAND(String BRAND) {
+        this.BRAND = BRAND;
     }
 
-    public String getColor() {
-        return color;
+    public String getCATEGORY() {
+        return CATEGORY;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setCATEGORY(String CATEGORY) {
+        this.CATEGORY = CATEGORY;
     }
 
-    public String getSeason() {
-        return season;
+    public String getCOLOR() {
+        return COLOR;
     }
 
-    public void setSeason(String season) {
-        this.season = season;
+    public void setCOLOR(String COLOR) {
+        this.COLOR = COLOR;
     }
 
-    public String getTextile() {
-        return textile;
+    public String getSEASON() {
+        return SEASON;
     }
 
-    public void setTextile(String textile) {
-        this.textile = textile;
+    public void setSEASON(String SEASON) {
+        this.SEASON = SEASON;
     }
 
-    public String getItemName() {
-        return itemName;
+    public String getTEXTILE() {
+        return TEXTILE;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setTEXTILE(String TEXTILE) {
+        this.TEXTILE = TEXTILE;
     }
 
-    public int getPrice() {
-        return price;
+    public String getITEM() {
+        return ITEM;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setITEM(String ITEM) {
+        this.ITEM = ITEM;
     }
 
-    public String getImg() {
-        return img;
+    public int getPRICE() {
+        return PRICE;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+    public void setPRICE(int PRICE) {
+        this.PRICE = PRICE;
+    }
+
+    public String getIMG() {
+        return IMG;
+    }
+
+    public void setIMG(String IMG) {
+        this.IMG = IMG;
     }
 
     public String getURL() {
@@ -102,14 +112,15 @@ public class PANTS {
     @Override
     public String toString() {
         return "PANTS{" +
-                "brand='" + brand + '\'' +
-                ", category='" + category + '\'' +
-                ", color='" + color + '\'' +
-                ", season='" + season + '\'' +
-                ", textile='" + textile + '\'' +
-                ", itemName='" + itemName + '\'' +
-                ", price=" + price +
-                ", img='" + img + '\'' +
+                "PANTS_ID='" + PANTS_ID + '\'' +
+                ", BRAND='" + BRAND + '\'' +
+                ", CATEGORY='" + CATEGORY + '\'' +
+                ", COLOR='" + COLOR + '\'' +
+                ", SEASON='" + SEASON + '\'' +
+                ", TEXTILE='" + TEXTILE + '\'' +
+                ", ITEM='" + ITEM + '\'' +
+                ", PRICE=" + PRICE +
+                ", IMG='" + IMG + '\'' +
                 ", URL='" + URL + '\'' +
                 '}';
     }

@@ -49,7 +49,6 @@ public class CrawlingDemoApplication {
             // 남자 옷을 봐야하기 때문에 우 하단 '남성' 클릭
             WebElement gotoMen = driver.findElement(By.cssSelector("body > div.wrap > div.right_area > div.global-filter > button.global-filter__button.global-filter__button--mensinsa"));
             gotoMen.click();
-            Thread.sleep(1000);
 
             // 스타일 카테고리 선택 : 캐주얼(2) / 댄디(4) / 포멀(5) / 스트릿(9)
 //            int[] categoryNum = {2, 4, 5, 9};
@@ -58,10 +57,9 @@ public class CrawlingDemoApplication {
                 String styleCategory = driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum[i] + ") > a")).getText();
                 styleCategory = styleCategory.substring(3);
                 driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum[i] + ") > a")).click();
-                Thread.sleep(1000);
 
-                // 각 카테고리에서 크롤링 실행 메서드
-                data(styleCategory, driver);
+                // 각 스타일 카테고리에서 크롤링 실행 메서드
+                detailCoordi(styleCategory, driver);
 
 //				driver.navigate().back();
             }
@@ -73,24 +71,23 @@ public class CrawlingDemoApplication {
         }
     }
 
-    private void data(String styleCategory, WebDriver driver) throws InterruptedException {
+    private void detailCoordi(String styleCategory, WebDriver driver) throws InterruptedException {
         for (int i = 1; i <= 60; i++) {
-            // 각 코디 디테일로 이동
+            // 각 코디의 디테일로 이동
             driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > ul > li:nth-child(" + i + ") > div.style-list-item__thumbnail > a")).click();
-            Thread.sleep(1000);
 
             // 코디 상품 항목 탐색 메서드
-            detail(styleCategory, driver);
+            detailGoods(styleCategory, driver);
 
+            // 뒤로가기
             driver.navigate().back();
-            Thread.sleep(1000);
         }
-
-        COORDI coordi = new COORDI();
-        coordi.setSTYLE_CATEGORY(styleCategory);
     }
 
-    private void detail(String styleCategory, WebDriver driver) throws InterruptedException {
+    private void detailGoods(String styleCategory, WebDriver driver) throws InterruptedException {
+        // 코디 정보 저장
+        COORDI coordi = new COORDI();
+        coordi.setSTYLE_CATEGORY(styleCategory);
 
         // 각 코디 상품 디테일로 이동
         int itemNum = driver.findElements(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div")).size();
@@ -99,19 +96,47 @@ public class CrawlingDemoApplication {
         for (int i = 1; i <= itemNum; i++) {
             if (i == 1) {
                 driver.findElement(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div.swiper-slide.style_contents_size.swiper-slide-active > div.box-img > a")).click();
-                Thread.sleep(2000);
+                saveDate(driver);
             }
 
             else if (i == 2) {
                 driver.findElement(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div.swiper-slide.style_contents_size.swiper-slide-next > div.box-img > a")).click();
-                Thread.sleep(2000);
+                saveDate(driver);
             }
 
             else {
                 driver.findElement(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div:nth-child(" + i + ") > div.box-img > a")).click();
-                Thread.sleep(2000);
+                saveDate(driver);
             }
+        }
 
+    }
+
+    private void saveDate(WebDriver driver) {
+        // 선택한 상품이 어떤 종류인지 판단
+        String productInfo = driver.findElement(By.cssSelector("#page_product_detail > div.right_area.page_detail_product > div.right_contents.section_product_summary > div.product_info > p > a:nth-child(1)")).getText();
+
+        if (productInfo.equals("상의")) {
+
+            driver.navigate().back();
+        }
+
+        else if (productInfo.equals("바지")) {
+
+            driver.navigate().back();
+        }
+
+        else if (productInfo.equals("스니커즈") || productInfo.equals("신발")) {
+
+            driver.navigate().back();
+        }
+
+        else if (productInfo.equals("아우터")) {
+
+            driver.navigate().back();
+        }
+
+        else {
             driver.navigate().back();
         }
 
