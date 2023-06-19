@@ -2,7 +2,7 @@ package com.example.dto;
 
 public class TOP {
 
-    String TOP_ID;
+    int TOP_ID;
     String BRAND;
     String CATEGORY;
     String COLOR;
@@ -16,7 +16,7 @@ public class TOP {
     public TOP() {
     }
 
-    public TOP(String TOP_ID, String BRAND, String CATEGORY, String COLOR, String SEASON, String TEXTILE, String ITEM, int PRICE, String IMG, String URL) {
+    public TOP(int TOP_ID, String BRAND, String CATEGORY, String COLOR, String SEASON, String TEXTILE, String ITEM, int PRICE, String IMG, String URL) {
         this.TOP_ID = TOP_ID;
         this.BRAND = BRAND;
         this.CATEGORY = CATEGORY;
@@ -29,11 +29,11 @@ public class TOP {
         this.URL = URL;
     }
 
-    public String getTOP_ID() {
+    public int getTOP_ID() {
         return TOP_ID;
     }
 
-    public void setTOP_ID(String TOP_ID) {
+    public void setTOP_ID(int TOP_ID) {
         this.TOP_ID = TOP_ID;
     }
 
@@ -112,7 +112,7 @@ public class TOP {
     @Override
     public String toString() {
         return "TOP{" +
-                "TOP_ID='" + TOP_ID + '\'' +
+                "TOP_ID=" + TOP_ID +
                 ", BRAND='" + BRAND + '\'' +
                 ", CATEGORY='" + CATEGORY + '\'' +
                 ", COLOR='" + COLOR + '\'' +
