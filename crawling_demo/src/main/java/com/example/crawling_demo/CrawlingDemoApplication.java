@@ -36,7 +36,10 @@ public class CrawlingDemoApplication {
 
         // WebDriver 옵션을 설정
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized"); // 최대크기로
+//        options.addArguments("--start-maximized"); // 최대크기로
+        options.addArguments("--window-size=1920x1080");
+        options.addArguments("--headless"); // 브라우저 직접 띄우지 않음
+        options.addArguments("--disable-gpu");
         options.addArguments("--remote-allow-origins=*"); // Websocket connection 에러 해결
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // 페이지가 로드될 때까지 대기, Normal : 로드 이벤트 실행이 반환될 때까지 기다린다.
 
@@ -44,20 +47,34 @@ public class CrawlingDemoApplication {
         WebDriver driver = new ChromeDriver(options);
 
         // 웹페이지가 충분히 로딩되지 않아서 생기는 문제 방지
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
 
         try {
             // 무신사 스토어 코디맵 페이지로 이동
             driver.navigate().to("https://www.musinsa.com/app/codimap/lists");
 
             // 남자 옷을 봐야하기 때문에 우 하단 '남성' 클릭
-            WebElement gotoMen = driver.findElement(By.cssSelector("body > div.wrap > div.right_area > div.global-filter > button.global-filter__button.global-filter__button--mensinsa"));
-            gotoMen.click();
+            driver.findElement(By.cssSelector("body > div.wrap > div.right_area > div.global-filter > button.global-filter__button.global-filter__button--mensinsa")).click();
 
             // 스타일 카테고리 선택 : 캐주얼(2) / 댄디(4) / 포멀(5) / 스트릿(9)
             int[] categoryNum = {2, 4, 5, 9};
             for (int i = 0; i < categoryNum.length; i++) {
                 String mainURL = driver.getCurrentUrl();
+                switch (categoryNum[i]) {
+                    case 2:
+                        System.out.println("################### 캐주얼 코디맵 크롤링 시작 ###################");
+                        break;
+                    case 4:
+                        System.out.println("################### 댄디 코디맵 크롤링 시작 ###################");
+                        break;
+                    case 5:
+                        System.out.println("################### 포멀 코디맵 크롤링 시작 ###################");
+                        break;
+                    case 9:
+                        System.out.println("################### 스트릿 코디맵 크롤링 시작 ###################");
+                        break;
+                }
+
                 // 각 스타일 카테고리에서 크롤링 실행 메서드
                 detailCoordi(driver, categoryNum[i], mainURL);
             }
@@ -66,41 +83,53 @@ public class CrawlingDemoApplication {
             e.printStackTrace();
         } finally {
             // WebDriver 종료
-//            driver.quit();
+            driver.quit();
             System.out.println("################### END ###################");
         }
     }
 
     private void detailCoordi(WebDriver driver, int categoryNum, String mainURL) {
-        for (int i = 4; i <= 13; i++) {
-            for (int j = 25; j <= 60; j++) {
-                try {
-                    driver.navigate().to(mainURL);
-                    String styleCategory = driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).getText();
-                    styleCategory = styleCategory.substring(3);
-                    driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
+        driver.navigate().to(mainURL);
+        // 캐쥬얼은 30개 페이지 크롤링 나머지는 20개 페이지 크롤링
+        int num = 2;
+        if (categoryNum == 2) {
+            num = 3;
+        }
 
-                    // 각 코디의 디테일로 이동
-                    driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > ul > li:nth-child(" + j + ") > div.style-list-item__thumbnail > a")).click();
+        for (int page = 0; page < num; page++) {
+            outer: for (int i = 3; i <= 12; i++) {
+                for (int j = 1; j <= 60; j++) {
+                    try {
+                        // 각 코디를 선택하기 전 카테고리와 현재 페이지를 클릭
+                        driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
+                        if (page > 0) {
+                            for (int k = 0; k < page; k++) {
+                                driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > div.pagination-box.box > div > div > a:nth-child(13)")).click();
+                            }
+                        }
+                        driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > div.pagination-box.box > div > div > a:nth-child(" + i + ")")).click();
 
-                    // 코디 디테일 주소 저장
-                    String coordiURL = driver.getCurrentUrl();
+                        // 현재 카테고리 이름
+                        String styleCategory = driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).getText();
+                        styleCategory = styleCategory.substring(3);
 
-                    // 코디 상품 항목 탐색 메서드
-                    detailGoods(styleCategory, driver, coordiURL);
-                } catch (Exception e) {
-                    System.out.println("Exception 2");
-                    // 코디 디테일 창에서 뒤로가기가 안 먹는 예외 경우
-                    driver.navigate().back();
-                    driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
-                    e.printStackTrace();
+                        // 각 코디의 디테일로 이동
+                        driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > ul > li:nth-child(" + j + ") > div.style-list-item__thumbnail > a")).click();
+
+                        // 코디 디테일 주소 저장
+                        String coordiURL = driver.getCurrentUrl();
+
+                        // 코디 상품 항목 탐색 메서드
+                        detailGoods(styleCategory, driver, coordiURL);
+                    } catch (Exception e) {
+                        System.out.println("detailCoordi 부분 실행 중 예외 발생");
+                        e.printStackTrace();
+                    } finally {
+                        driver.navigate().to(mainURL);
+                    }
                 }
+                System.out.println("################### Next Page : " + (page * 10 + (i - 1)) + "Page ###################");
             }
-
-            System.out.println("Next page");
-            // 다음 페이지로 넘어가기 전에 현재의 카테고리를 클릭하고 넘어가기
-            driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
-            driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > div.pagination-box.box > div > div > a:nth-child(" + i + ")")).click();
         }
     }
 
@@ -111,7 +140,7 @@ public class CrawlingDemoApplication {
 
         // 각 코디 상품 디테일로 이동
         int itemNum = driver.findElements(By.cssSelector("#style_info > div.styling_goods.codimap-goods > div > div > div > div.styling_list.swiper-wrapper > div")).size();
-        System.out.println(itemNum);
+        System.out.println("################### 등록되어 있는 코디 상품의 갯수 : " + itemNum + " ###################");
 
         for (int i = 1; i <= itemNum; i++) {
             try {
@@ -127,8 +156,6 @@ public class CrawlingDemoApplication {
                 }
             } catch (Exception e) {
                 System.out.println("Exception 3");
-
-                // 오류 1. 잘 크롤링을 하고 나서 뒤로가기가 작동을 안해서 그 다음 디테일로 이동하지 않는 경우
                 // 뒤로가기를 다시 실행하고, 그 다음 디테일로 이동하도록 재 작성
                 if (driver.getCurrentUrl().contains("goods")) {
                     driver.navigate().back();
@@ -166,7 +193,12 @@ public class CrawlingDemoApplication {
 
                 // 오류 발견 : 옷의 시즌 정보가 누락되어 있는 제품이 있음
                 try {
-                    top.setSEASON(driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5));
+                    String clothSeason = driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5);
+                    if (clothSeason.charAt(0) == 'L') {
+                        top.setSEASON("ALL");
+                    } else {
+                        top.setSEASON(clothSeason);
+                    }
                 } catch (Exception f) {
 
                 }
@@ -202,8 +234,14 @@ public class CrawlingDemoApplication {
 
                 pants.setCOLOR(getColor(driver));
 
+                // 오류 발견 : 옷의 시즌 정보가 누락되어 있는 제품이 있음
                 try {
-                    pants.setSEASON(driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5));
+                    String clothSeason = driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5);
+                    if (clothSeason.charAt(0) == 'L') {
+                        pants.setSEASON("ALL");
+                    } else {
+                        pants.setSEASON(clothSeason);
+                    }
                 } catch (Exception f) {
 
                 }
@@ -238,9 +276,15 @@ public class CrawlingDemoApplication {
 
                 shoes.setCOLOR(getColor(driver));
 
+                // 오류 발견 : 옷의 시즌 정보가 누락되어 있는 제품이 있음
                 try {
-                    shoes.setSEASON(driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5));
-                } catch (Exception e) {
+                    String clothSeason = driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5);
+                    if (clothSeason.charAt(0) == 'L') {
+                        shoes.setSEASON("ALL");
+                    } else {
+                        shoes.setSEASON(clothSeason);
+                    }
+                } catch (Exception f) {
 
                 }
 
@@ -274,9 +318,15 @@ public class CrawlingDemoApplication {
 
                 outer.setCOLOR(getColor(driver));
 
+                // 오류 발견 : 옷의 시즌 정보가 누락되어 있는 제품이 있음
                 try {
-                    outer.setSEASON(driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5));
-                } catch (Exception e) {
+                    String clothSeason = driver.findElement(By.cssSelector("#product_order_info > div.explan_product.product_info_section > ul > li:nth-child(2) > p.product_article_contents > strong")).getText().substring(5);
+                    if (clothSeason.charAt(0) == 'L') {
+                        outer.setSEASON("ALL");
+                    } else {
+                        outer.setSEASON(clothSeason);
+                    }
+                } catch (Exception f) {
 
                 }
 
@@ -300,7 +350,7 @@ public class CrawlingDemoApplication {
                 System.out.println("outer : " + outer.toString());
             }
         } catch (Exception e) {
-            System.out.println("Exception 4");
+            System.out.println("");
             e.printStackTrace();
         } finally {
             driver.navigate().to(coordiURL);
