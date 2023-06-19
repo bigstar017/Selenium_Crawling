@@ -67,9 +67,10 @@ public class CrawlingDemoApplication {
             }
         } catch (Exception e) {
             System.out.println("Exception 1");
+            e.printStackTrace();
         } finally {
             // WebDriver 종료
-            driver.quit();
+//            driver.quit();
             System.out.println("################### END ###################");
         }
     }
@@ -83,16 +84,18 @@ public class CrawlingDemoApplication {
 
                     // 코디 상품 항목 탐색 메서드
                     detailGoods(styleCategory, driver);
-                    driver.navigate().back();
-
                 } catch (Exception e) {
                     System.out.println("Exception 2");
+                    // 코디 디테일 창에서 뒤로가기가 안 먹는 예외 경우
+                    driver.navigate().back();
+                    driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
                     e.printStackTrace();
                 } finally {
-                    // 뒤로가기
                     driver.navigate().back();
                 }
             }
+
+            System.out.println("Next page");
             // 다음 페이지로 넘어가기 전에 현재의 카테고리를 클릭하고 넘어가기
             driver.findElement(By.cssSelector("#catelist > div:nth-child(2) > div > dl > dd > ul > li:nth-child(" + categoryNum + ") > a")).click();
             driver.findElement(By.cssSelector("body > div.wrap > div.right_area > form > div.right_contents.hover_box > div > div.pagination-box.box > div > div > a:nth-child(" + i + ")")).click();
@@ -122,7 +125,6 @@ public class CrawlingDemoApplication {
                 }
             } catch (Exception e) {
                 System.out.println("Exception 3");
-                e.printStackTrace();
 
                 // 오류 1. 잘 크롤링을 하고 나서 뒤로가기가 작동을 안해서 그 다음 디테일로 이동하지 않는 경우
                 // 뒤로가기를 다시 실행하고, 그 다음 디테일로 이동하도록 재 작성
@@ -299,8 +301,6 @@ public class CrawlingDemoApplication {
         } catch (Exception e) {
             System.out.println("Exception 4");
             e.printStackTrace();
-            driver.navigate().refresh();
-//            driver.navigate().back();
         } finally {
             driver.navigate().back();
         }
